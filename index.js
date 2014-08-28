@@ -10,7 +10,6 @@ function stylusPlugin(browserify, options) {
 
   options = options || {};
 
-  var output = options.output || options.o;
   var filenames = [];
 
   browserify.transform(function (filename) {
@@ -60,18 +59,14 @@ function stylusPlugin(browserify, options) {
 
       filenames = [];
 
-      if (output !== undefined) {
-        stream.css.pipe(fs.createWriteStream(output));
-      }
-
-      try {
-        var css = styl.render();
-        stream.css.queue(css);
-        stream.css.queue(null);
-      } catch (err) {
-        stream.emit('error', err);
-        stream.css.emit('error', err);
-      }
+      styl.render(function (err, css) {
+        if (!err) {
+          stream.css.queue(css);
+          stream.css.queue(null);
+        } else {
+          stream.css.emit('error', err);
+        }
+      });
 
     });
 
