@@ -8,10 +8,44 @@ var compiler = require('../lib/compiler');
 var stylusPlugin = require('../.');
 
 var nib = require('nib');
+var autoprefix = require('autoprefixer-stylus');
 
 var assert = require('assert');
 
 describe('stylus opts', function () {
+
+  it('stylus with define simple bundle', function (done) {
+
+    function add(a, b) {
+      return a.operate('+', b);
+    }
+
+    var opts = {
+      define: [
+        ['add' , add]
+      ]
+    };
+
+    var stylString = String(fs.readFileSync(path.join(__dirname, 'src/component-define/index.styl')));
+    var cssString = compiler(stylString, opts).render();
+
+    var b = browserify(path.join(__dirname, 'define.js'))
+      .plugin(stylusPlugin, opts);
+
+    var stream = b.bundle();
+
+    // stream must emit `end` before then css stream start
+    stream
+      .pipe(getDataAndEnd());
+
+    stream.css
+      .pipe(getDataAndEnd(function (data) {
+        console.log(data);
+        assert.equal(data, cssString)
+      }))
+      .on('end', done);
+  });
+
 
   it('stylus with nib simple bundle', function (done) {
 
@@ -34,10 +68,39 @@ describe('stylus opts', function () {
 
     stream.css
       .pipe(getDataAndEnd(function (data) {
+        console.log(data);
+        assert.equal(data, cssString)
+      }))
+      .on('end', done);
+  });
+
+
+  it('stylus with autoprefix simple bundle', function (done) {
+
+    var opts = {
+      use: [autoprefix()]
+    };
+
+    var stylString = String(fs.readFileSync(path.join(__dirname, 'src/component-autoprefix/index.styl')));
+    var cssString = compiler(stylString, opts).render();
+
+    var b = browserify(path.join(__dirname, 'autoprefix.js'))
+      .plugin(stylusPlugin, opts);
+
+    var stream = b.bundle();
+
+    // stream must emit `end` before then css stream start
+    stream
+      .pipe(getDataAndEnd());
+
+    stream.css
+      .pipe(getDataAndEnd(function (data) {
+        console.log(data);
         assert.equal(data, cssString)
       }))
       .on('end', done);
   })
+
 
 });
 
