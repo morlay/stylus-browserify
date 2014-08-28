@@ -1,0 +1,39 @@
+{
+  "name": "stylus-browserify",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "dependencies": {
+    "stylus": "^0.48.1",
+    "through": "^2.3.4"
+  },
+  "devDependencies": {
+    "autoprefixer-stylus": "^0.3.0",
+    "browserify": "^5.10.1",
+    "chai": "^1.9.1",
+    "mkdirp": "^0.5.0",
+    "mocha": "^1.21.4",
+    "nib": "^1.0.3"
+  },
+  "scripts": {
+    "test": "mocha test/*.spec.js -R spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/morlay/stylus-browserify.git"
+  },
+  "keywords": [
+    "stylus",
+    "browserify-plugin"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/morlay/stylus-browserify/issues"
+  },
+  "homepage": "https://github.com/morlay/stylus-browserify"
+}
