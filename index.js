@@ -2,10 +2,9 @@
 
 var fs = require('fs');
 var through = require('through');
-var stylus = require('stylus');
+var compiler = require('./lib/compiler');
 
 var isStylusFile = /\.(styl|css)$/;
-var stylusModulePath = require.resolve('stylus');
 
 function stylusPlugin(browserify, options) {
 
@@ -14,14 +13,15 @@ function stylusPlugin(browserify, options) {
   var output = options.output || options.o;
   var filenames = [];
 
-  browserify.transform(function(filename) {
+  browserify.transform(function (filename) {
     if (!isStylusFile.exec(filename)) return through();
 
     filenames.push(filename);
 
     return through(
-      function() {},
-      function() {
+      function () {
+      },
+      function () {
         this.queue('');
         this.queue(null);
       });
@@ -29,14 +29,14 @@ function stylusPlugin(browserify, options) {
 
   var bundle = browserify.bundle;
 
-  browserify.bundle = function(opts, cb) {
+  browserify.bundle = function (opts, cb) {
 
     if (browserify._pending) {
 
       var tr = through();
       tr.css = through();
 
-      browserify.on('_ready', function() {
+      browserify.on('_ready', function () {
         var b = browserify.bundle(opts, cb);
 
         b.on('transform', tr.emit.bind(tr, 'transform'));
@@ -54,22 +54,9 @@ function stylusPlugin(browserify, options) {
 
     stream.css = through();
 
-    stream.on('end', function() {
+    stream.on('end', function () {
 
-      var code = composeStylesheet(filenames);
-
-      var styl = stylus(code, options);
-
-      [
-        'use',
-        'import'
-      ].forEach(function(key) {
-        if (options[key] && options[key].length) {
-          options[key].forEach(function(item) {
-            styl[key](item);
-          })
-        }
-      })
+      var styl = compiler(composeStylesheet(filenames), options);
 
       filenames = [];
 
@@ -78,25 +65,27 @@ function stylusPlugin(browserify, options) {
       }
 
       try {
-        stream.css.queue(styl.render());
+        var css = styl.render();
+        stream.css.queue(css);
         stream.css.queue(null);
       } catch (err) {
         stream.emit('error', err);
         stream.css.emit('error', err);
       }
+
     });
 
     return stream;
-  }
+
+  };
 
   return browserify;
 }
 
 function composeStylesheet(filenames) {
-  var code = filenames.map(function(filename) {
+  return filenames.map(function (filename) {
     return '@import "' + filename.replace('.css', '.styl') + '";';
   }).join('\n');
-  return code;
 }
 
 module.exports = stylusPlugin;
