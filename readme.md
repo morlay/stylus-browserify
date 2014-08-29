@@ -8,10 +8,10 @@ Use for [browserify plugin](https://github.com/substack/node-browserify#plugins)
 
 ## Usage
 
-    var require('browserify');
-    var stylusBrowserify('Stylus-browserify')
+    var browserify = require('browserify');
+    var stylusBrowserify = require('stylus-browserify')
 
-    var b = browserify('/path/to/entry.js').plugin(stylusBrowserify, {});
+    var b = browserify('/path/to/entry.js').plugin(stylusBrowserify, OPTIONS);
 
     var stream = b.bundle();
 
