@@ -55,6 +55,8 @@ function stylusPlugin(browserify, options) {
 
     stream.on('end', function () {
 
+      console.log('end')
+
       var styl = compiler(composeStylesheet(filenames), options);
 
       filenames = [];
@@ -64,7 +66,7 @@ function stylusPlugin(browserify, options) {
           stream.css.queue(css);
           stream.css.queue(null);
         } else {
-          stream.css.emit('error', err);
+          stream.emit('error', err);
         }
       });
 

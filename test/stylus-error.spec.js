@@ -22,13 +22,14 @@ describe('stylus error', function () {
 
     // stream must emit `end` before then css stream start
     stream
-      .pipe(getDataAndEnd());
-
-    stream.css
       .on('error', function (err) {
+        console.log(err)
         assert.equal(err.name, 'ParseError');
         done()
       })
+      .pipe(getDataAndEnd());
+
+    stream.css
       .pipe(getDataAndEnd())
       .on('end', done);
   });
